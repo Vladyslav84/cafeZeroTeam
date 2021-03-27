@@ -2,7 +2,7 @@ import workers from './db.workers.js'
 import menu from './db.menu.js'
 import tables from './db.tables.js'
 
- class Cafe  {
+ class ClassCafe  {
     constructor ({workers, tables, menu}) {
         this.workers = workers;
         this.tables = tables;
@@ -11,17 +11,37 @@ import tables from './db.tables.js'
 
    
     addNewOfficiant(name) {
-      //  метод добавляет нового официанта
+        const newWorker = {
+            name,
+            isPresent: false,
+            tables: [],
+            tips: 0,
+        }
+        this.workers.push(newWorker);
+    
     }
     getPresentWorkers() {
-      //  метод возвращает массив оффициантов присутствующих на смене
-    }
+        this.presentWorkers = this.workers.filter(worker => {return worker.isPresent});
+         }
     setupTables() {
-      //  метод распределяет столики между присутствующими официантами
-      //  добавляяет официантам в столики, которые за ними закреплены
-      //  и добавляет столику оффицианта, который его обслуживает
+        
+      this.getPresentWorkers();
+      const countWorkers = this.presentWorkers.length;
+      this.tables = this.tables.map((table,ind) => {
+        const currentWorker = this.presentWorkers[ind % countWorkers];
+        table.service = currentWorker.name;
+        currentWorker.tables.push({id: table.table})
+
+        return table;
+      })
     }
   };
 
-  const cafe = new Cafe ({workers, tables, menu}) 
-  console.log(cafe);
+  const cafe = new ClassCafe ({workers, tables, menu}) 
+  cafe.addNewOfficiant('Дима')
+//   cafe.getPresentWorkers();
+  cafe.setupTables();
+// console.log(cafe.tables);
+
+// console.log(cafe.workers);
+  console.log(cafe.presentWorkers);
